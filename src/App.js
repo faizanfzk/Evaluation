@@ -9,13 +9,14 @@ export default function App() {
   const [loading,setLoading]=useState(true)
   const [error,seterror]=useState(false)
   const [page,setPage]=useState(1)
+  const [salary,setSalary]=useState("ASC")
 
 
   useEffect(() => {
     
-      fetchData(page)
+      fetchData({page,salary})
     
-  },[page])
+  },[page,salary])
 
   const fetchData=()=>{
     setLoading(true)
@@ -25,13 +26,16 @@ export default function App() {
 
       params :{
         _page:page,
-        _limit:5
+        _limit:5,
+        _sort:"salary",
+        _order:`${salary}` 
+
 
       }
   })
   .then(res=>{
     setData(res.data)
-    setLoading(true)
+    setLoading(false)
 
   })
   .catch(err=>{
@@ -45,9 +49,10 @@ export default function App() {
     <div className="App">
       <div>
       { loading && <div id="loading-container">...Loading</div>}
-        <Button id="SORT_BUTTON" title={`Sort by Ascending Salary`} />
-        <Button  title="PREV" id="PREV" />
-        <Button  id="NEXT" title="NEXT" />
+      {error && <div>Something went wrong!</div>}
+        <Button id="SORT_BUTTON" title={`Sort by Ascending Salary`} onClick={()=>setSalary("DESC")}  />
+        <Button  title="PREV" id="PREV" disabled={page==1} onClick={()=>setPage(page-1)} />
+        <Button  id="NEXT" title="NEXT" onClick={()=>setPage(page+1)} />
       </div>
       {data.map((item) => {
        return <CandidateCard key={item.id}{...item}/>
